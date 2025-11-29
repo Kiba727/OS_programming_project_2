@@ -6,5 +6,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fstream> 
+#include <sstream>
 
 #endif

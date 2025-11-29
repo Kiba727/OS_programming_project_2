@@ -19,20 +19,44 @@ int main()
 
     //bind socket to address
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
     //make socket wait and listen for incoming connections
     listen(serverSocket, 5);
 
-    //create copy of client socket
-    int clientSocket = accept(serverSocket, nullptr, nullptr);
+    cout << "Server running on http://localhost:8080" << endl; 
 
-    //create buffer to recieve data from client
-    char buffer[1024] = {0};
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    cout << "Message from client: " << buffer
-              << endl;
+    ifstream file("../temp.html"); 
+    if (!file.is_open()) {
+        cerr << "Failed to open temp.html" << endl;
+        return 1;
+    }
+    stringstream buffer; 
+    buffer << file.rdbuf(); 
+    string html = buffer.str();
 
-    close(serverSocket);
+    while (true){
+        //create copy of client socket
+        int clientSocket = accept(serverSocket, nullptr, nullptr);
+
+        //create buffer to recieve data from client
+        char buffer[1024] = {0};
+        recv(clientSocket, buffer, sizeof(buffer), 0);
+
+        cout << "Message from client: " << buffer
+                << endl;
+        
+        string http_response =
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/html\r\n"
+            "Content-Length: " + to_string(html.size()) + "\r\n"
+            "Connection: close\r\n"
+            "\r\n" +
+            html;
+
+        send(clientSocket, http_response.c_str(), http_response.size(), 0);
+        close(clientSocket);
+    }
+
+        close(serverSocket);
 
     return 0;
 }
