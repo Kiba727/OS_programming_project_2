@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project TODO List</title>
+</head>
+<body>
+  <h1>Project TODO List</h1>
+
+  <p>This is a simple client-side TODO list for our HTTP server project.</p>
+
+  <h2>Add a new task</h2>
+  <form id="todo-form">
+    <input type="text" id="todo-input" placeholder="Enter a task..." />
+    <button type="submit">Add</button>
+  </form>
+
+  <h2>Tasks</h2>
+  <ul id="todo-list">
+    <!-- items will be inserted here by JavaScript -->
+  </ul>
+
+  <script>
+    // Simple TODO list stored in localStorage so it persists per browser
+    const form = document.getElementById('todo-form');
+    const input = document.getElementById('todo-input');
+    const list = document.getElementById('todo-list');
+
+    function loadTodos() {
+      const saved = localStorage.getItem('project_todos');
+      if (!saved) return [];
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveTodos(todos) {
+      localStorage.setItem('project_todos', JSON.stringify(todos));
+    }
+
+    function renderTodos() {
+      const todos = loadTodos();
+      list.innerHTML = '';
+      todos.forEach((item, index) => {
+        const li = document.createElement('li');
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = item;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.style.marginLeft = '8px';
+        deleteBtn.onclick = function () {
+          const updated = loadTodos();
+          updated.splice(index, 1);
+          saveTodos(updated);
+          renderTodos();
+        };
+
+        li.appendChild(textSpan);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+      });
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (value === '') return;
+
+      const todos = loadTodos();
+      todos.push(value);
+      saveTodos(todos);
+      input.value = '';
+      renderTodos();
+    });
+
+    // Initial render
+    renderTodos();
+  </script>
+</body>
+</html>
