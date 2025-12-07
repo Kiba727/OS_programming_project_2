@@ -1,10 +1,5 @@
 #include "socket.h"
 
-#include <arpa/inet.h>
-#include <cstring>
-#include <unistd.h>
-#include <iostream>
-
 int create_listen_socket(int port, int backlog) {
     // Creates a TCP socket for IPv4 Networking 
     // Creates a socket object inside the kernel 

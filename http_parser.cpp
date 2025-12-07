@@ -1,12 +1,5 @@
 #include "http_parser.h"
 
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <string>
-
 namespace {
 
 // helper to check suffix
@@ -56,7 +49,7 @@ void send_simple(int fd, int code, const std::string &reason, const std::string 
 } // namespace
 
 void handle_client(int client_fd) { 
-    // sleep(10);  // 10 seconds
+    sleep(10);  // 10 seconds
     char buf[4096];
     ssize_t n = recv(client_fd, buf, sizeof(buf)-1, 0);
     if (n <= 0) return;
