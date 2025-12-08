@@ -18,7 +18,11 @@ static void* worker_loop(void* arg){
     sem_post(&pool->sem_slots);
 
     // handle client                                                                               
-    handle_client(fd);
+    handle_client(fd); 
+
+    // close client
+    close(fd);
+    printf("[-] Client disconnected (FD: %d)\n", fd);
     
   }
   return NULL;
@@ -48,7 +52,7 @@ void pool_destroy(ThreadPool* pool){
   pool->stop = true;
 
   // wake up all sleeping workers
-  for (int i = 0; i < NUM_THREADS; i++){
+  for (int i = 0; i < pool->num_threads; i++){
     sem_post(&pool->sem_tasks);
   }
 
