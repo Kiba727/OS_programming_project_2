@@ -52,19 +52,20 @@ int main() {
     ThreadPool pool;
     pool_init(&pool, 5);
 
-    // This is the "Accept" Loop
+    // Accept look where clients are queued to threadpool
     while (1) {
-            sockaddr_in client;
-            int client_fd = accept_client(listen_fd, client);
+        sockaddr_in client;
+        int client_fd = accept_client(listen_fd, client);
 
-            if (client_fd < 0) {
-                continue;
-            }
+        if (client_fd < 0) {
+            continue;
+        }
 
-            pool_enqueue(&pool, client_fd);
+        // Enqueue the client where the workers will handle it
+        pool_enqueue(&pool, client_fd);
     }
     
     pool_destroy(&pool);
     close(listen_fd);
     return 0;
-    }
+}
