@@ -27,4 +27,4 @@ test_parser: test_parser.o http_parser.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET) $(OBJS) $(TEST_TARGETS) *.o
