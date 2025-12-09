@@ -1,20 +1,3 @@
-/**
- * @file main.cpp
- * @brief Multi-threaded HTTP Server Entry Point.
- * @author: John, Zack, Patrick
- * 
- * This file implements the main server loop. It uses a "Thread-per-connection"
- * model, but throttled by a semaphore to prevent resource exhaustion.
- * * Architecture:
- * 1. Initialize a listening socket.
- * 2. Initialize a semaphore (token bucket) with 5 tokens.
- * 3. Loop forever:
- * a. Wait for a token (sem_wait).
- * b. Accept a client.
- * c. Spawn a thread to handle the client.
- * d. Thread releases token (sem_post) when finished.
- */
-
 #include "socket.h"
 #include "http_parser.h"
 
@@ -52,7 +35,7 @@ int main() {
     int listen_fd = create_listen_socket(port);
 
     sem_init(&thread_limiter, 0, 5);
-
+    printf("http://localhost:8080/\n");
     printf("Server listening on port %d...\n", port);
 
     // This is the "Accept" Loop
