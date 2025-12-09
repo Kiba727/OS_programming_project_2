@@ -45,7 +45,7 @@ typedef struct{
  *
  * @return 0 if successful, -1 on error
  */
-void pool_init(ThreadPool* pool, int num_threads);
+int pool_init(ThreadPool* pool, int num_threads);
 
 /**
  * @brief Shuts down the thread pool and cleans up resources.

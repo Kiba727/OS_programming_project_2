@@ -28,7 +28,7 @@ static void* worker_loop(void* arg){
   return NULL;
 }
 
-void pool_init(ThreadPool* pool, int num_threads){
+int pool_init(ThreadPool* pool, int num_threads){
   // populate struct                                                                                
   pool->num_threads = num_threads;
   pool->task_start = 0;
@@ -36,6 +36,10 @@ void pool_init(ThreadPool* pool, int num_threads){
   pool->stop = false;
 
   pool->threads	= (pthread_t*)malloc(sizeof(pthread_t) * num_threads);
+  if (pool->threads == NULL){
+    perror("Failed to allocate memory for thread pool");
+    return -1;
+  }
 
   // init semaphores                                                                                
   sem_init(&pool->sem_tasks, 0, 0);
@@ -45,6 +49,8 @@ void pool_init(ThreadPool* pool, int num_threads){
   for(int i = 0; i < num_threads; i++){
     pthread_create(&pool->threads[i], NULL, worker_loop, pool);
   }
+  // success
+  return 0;
 }
 
 void pool_destroy(ThreadPool* pool){
