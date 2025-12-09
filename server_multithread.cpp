@@ -17,11 +17,12 @@
 
 #include "socket.h"
 #include "http_parser.h"
-#include "thread_pool.h"
 
 #include <arpa/inet.h>
 #include <iostream>
 #include <unistd.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 sem_t thread_limiter;
 
@@ -32,13 +33,15 @@ sem_t thread_limiter;
  * * @param arg A void pointer containing the client socket file descriptor (cast from int).
  * @return NULL (Standard pthread return).
  */
-void client_worker(void* arg) {
+void* client_worker(void* arg) {
     int client_fd = (int)(intptr_t)arg;
 
     handle_client(client_fd);
     
     close(client_fd);
     printf("[-] Client disconnected (FD: %d)\n", client_fd);
+    sem_post(&thread_limiter);
+    return NULL;
 }
 
 int main() { 
@@ -47,25 +50,35 @@ int main() {
     // Asks the OS for a TCP (Transmission Control Protocol) socket boudn to port 8080
     // Puts it into "Listening Mode"
     int listen_fd = create_listen_socket(port);
+
+    sem_init(&thread_limiter, 0, 5);
+
     printf("Server listening on port %d...\n", port);
 
-    ThreadPool pool;
-    pool_init(&pool, 5);
-
-    // Accept look where clients are queued to threadpool
+    // This is the "Accept" Loop
     while (1) {
-        sockaddr_in client;
-        int client_fd = accept_client(listen_fd, client);
+            sem_wait(&thread_limiter);
 
-        if (client_fd < 0) {
-            continue;
+            sockaddr_in client;
+            int client_fd = accept_client(listen_fd, client);
+
+            if (client_fd < 0) {
+                sem_post(&thread_limiter);
+                continue;
+            }
+
+            pthread_t thread_id;
+            
+            if (pthread_create(&thread_id, NULL, client_worker, (void*)(intptr_t)client_fd) != 0) {
+                perror("Thread creation failed");
+                close(client_fd);
+                sem_post(&thread_limiter);
+            } else {
+                pthread_detach(thread_id);
+            }
         }
 
-        // Enqueue the client where the workers will handle it
-        pool_enqueue(&pool, client_fd);
+        sem_destroy(&thread_limiter);
+        close(listen_fd);
+        return 0;
     }
-    
-    pool_destroy(&pool);
-    close(listen_fd);
-    return 0;
-}
