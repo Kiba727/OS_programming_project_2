@@ -4,9 +4,9 @@ Main programn
 
 1. Run make to create the following executables
 
-./server_single
-./server_multi
-./serer_pool
+./server_single 
+./server_multi 
+./server_pool 
 
 2. run any of the above excecutables and type the following url in your browser
 
