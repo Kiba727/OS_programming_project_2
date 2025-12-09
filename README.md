@@ -1,6 +1,6 @@
 How to run:
 
-Main programn
+Main program
 
 1. Run make to create the following executables
 
@@ -20,4 +20,4 @@ Test programn
 ./test_parser
 ./test_thread_pool
 
-2. run any of the excecutables to test programn functions
+2. run any of the excecutables to test program functions
