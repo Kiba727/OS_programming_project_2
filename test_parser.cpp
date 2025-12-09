@@ -10,7 +10,6 @@
 
 int main() {
     std::cout << "=== Starting HTTP Parser Test ===\n";
-    std::cout << "Note: current implementation sleeps for 10 seconds.\n";
 
     // Use a dummy FD, since the current handle_client doesn't read/write
     int dummy_fd = 999; 
