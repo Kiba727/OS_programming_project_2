@@ -50,7 +50,8 @@ int main() {
     printf("Server listening on port %d...\n", port);
 
     ThreadPool pool;
-    if (int created = pool_init(&pool, 5) < 0) {
+    int created = pool_init(&pool, 5);
+    if (created < 0) {
         fprintf(stderr, "Error allocating memory\n");
         return(-1);
     }
